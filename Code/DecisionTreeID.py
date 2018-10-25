@@ -2,17 +2,21 @@ import pandas as pd
 import numpy as np
 
 def Entropia(matriz_datos,index=False,valor=0):
+	# Calculamos las clases existentes y las repeticiones en las mismas.
 	valDif = matriz_datos[matriz_datos.columns[-1]].value_counts()
-	#TODO: pasar a df y trabajar
-	print(list(valDif))
-	adsgfasd
+	# Convertimos la serie generada con la operación anterior en una lista de duplas
+	# para trabajar con el número de apariciones de cada clase.
+	valDif = list(zip(valDif.index, valDif.values))
+	
 	l = len(matriz_datos)
 	if not index:
 		#Estamos calculando la entropía de la variable de decisión
+		E = 0
 		for k in valDif:
 			p = k[1]/l 
 			E += p*np.log2(p)
 	else:
+		# Calculamos la entropía de una variable instanciada con un valor dado
 		cnt = matriz_datos.groupby([matriz_datos.columns[index],matriz_datos.columns[-1]]).size()
 		print(cnt)
 	return -E
