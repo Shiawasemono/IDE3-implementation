@@ -1,15 +1,15 @@
 import pandas as pd
 import numpy as np
 
-def entropia(matriz_datos,index=-1,valor=0):
+def entropia(matriz_datos,col='',valor=0):
 	# Calculamos las clases existentes y las repeticiones en las mismas.
-	valDif = matriz_datos[matriz_datos.columns[-1]].value_counts()
+	valDif = matriz_datos[col].value_counts()
 	# Convertimos la serie generada con la operación anterior en una lista de duplas
 	# para trabajar con el número de apariciones de cada clase.
 	valDif = list(zip(valDif.index, valDif.values))
 	l = len(matriz_datos)
 	E = 0
-	if index == -1:
+	if col == '':
 		#Estamos calculando la entropía de la variable de decisión
 		for k in valDif:
 			p = k[1]/l 
@@ -17,7 +17,7 @@ def entropia(matriz_datos,index=-1,valor=0):
 	else:
 		# Calculamos la entropía de una variable instanciada con un valor dado
 		# Extracción del data frame filtrado por las dos columnas necesarias(index y variable de decisión)
-		cnt = matriz_datos.groupby([matriz_datos.columns[index],matriz_datos.columns[-1]]).size()
+		cnt = matriz_datos.groupby([col,matriz_datos.columns[-1]]).size()
 		# Zipeo de la información
 		dic = dict(zip(cnt.index,cnt.values))
 		# Array conla información que será filtrada por valor
@@ -50,6 +50,6 @@ raw_data = {'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks',
         'postTestScore': [25, 94, 57, 62, 70, 25, 94, 57, 62, 70, 62, 70]}
 
 df = pd.DataFrame(raw_data)
-print(Entropia(df, index=0, valor='Nighthawks'))
+print(entropia(df, col='regiment', valor='Nighthawks'))
 
 
