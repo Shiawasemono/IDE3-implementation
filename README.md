@@ -1,4 +1,4 @@
 # IDE3-implementation
+Using anytree library. Installing:
+	pip install anytree
 
-using anytree library:
-    install with pip / pip3 install anytree
