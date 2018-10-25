@@ -3,13 +3,15 @@ import numpy as np
 
 def entropia(matriz_datos,col='',valor=0):
 	# Calculamos las clases existentes y las repeticiones en las mismas.
+	if(col == ''):
+		col = matriz_datos.columns[-1]
 	valDif = matriz_datos[col].value_counts()
 	# Convertimos la serie generada con la operación anterior en una lista de duplas
 	# para trabajar con el número de apariciones de cada clase.
 	valDif = list(zip(valDif.index, valDif.values))
 	l = len(matriz_datos)
 	E = 0
-	if col == '':
+	if col == matriz_datos.columns[-1]:
 		#Estamos calculando la entropía de la variable de decisión
 		for k in valDif:
 			p = k[1]/l 
@@ -41,12 +43,11 @@ def ganancia(matriz_datos,col):
 	valDif = matriz_datos[col].value_counts()
 	valDif = list(zip(valDif.index,valDif.values))
 	Sum = 0
-	for k in valDif
+	for k in valDif:
 		p = k[1]/filas
 		Sum -= p*entropia(matriz_datos,col,k[0])
 	G = enGen + Sum
 	return G
-
 
 
 
@@ -57,6 +58,6 @@ raw_data = {'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks',
         'postTestScore': [25, 94, 57, 62, 70, 25, 94, 57, 62, 70, 62, 70]}
 
 df = pd.DataFrame(raw_data)
-print(entropia(df, col='regiment', valor='Nighthawks'))
+print(ganancia(df, col='regiment'))
 
 
