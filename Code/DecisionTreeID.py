@@ -28,7 +28,10 @@ def DecisionTreeID(nombre_fichero):
             dict_ganancias[column] = ganancia(entropias) # calculo ganancia y la meto en el diccionario
         ganancia_maxima = max(dict_ganancias.items(), key=operator.itemgetter(1))[0] # cojo ganancia maxima
         # inserto nuevos nodos en arbol
+		#TODO: Antes de eliminar la columna, hay que eliminar las filas que contienen el valor del proximo nodo
         matriz_datos = matriz_datos.drop(columns = [ganancia_maxima]) # actualizo matriz_datos (elimino la columna escogida como atributo)
+		#TODO: No hay que considerar que el arbol esta acabado cuando solo hay una columna, sino cuando hemos explorado todos los valores del primer nodo.
+		# Backtracking HIGHLY recommended, o al menos la idea de la partición en miniárboles (que no deja de ser backtracking)
         arbol_terminado = len(matriz_datos.columns) == 1 # actualizo arbol_terminado
 
         # Borrar esto:
@@ -36,3 +39,10 @@ def DecisionTreeID(nombre_fichero):
         arbol_terminado = True
 
     return matriz_datos
+
+def decisionTree(matriz_datos, padre):
+	'''
+	:param pandas.DataFrame matriz_datos es la matriz a partir de la cual generar el nodo siguiente
+	:param str padre nodo padre del nodo a generar (en este caso será la columna de la que salió el arco)
+	'''
+	return matriz_datos
