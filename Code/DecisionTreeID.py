@@ -45,4 +45,5 @@ def decisionTree(matriz_datos, padre):
 	:param pandas.DataFrame matriz_datos es la matriz a partir de la cual generar el nodo siguiente
 	:param str padre nodo padre del nodo a generar (en este caso será la columna de la que salió el arco)
 	'''
-	return matriz_datos
+
+	# Al hacer backtracking no necesitamos devolver nada, simplemente salir de la funcion para que continúe
