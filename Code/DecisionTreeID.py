@@ -28,4 +28,4 @@ raw_data = {'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks',
         'postTestScore': [25, 94, 57, 62, 70, 25, 94, 57, 62, 70, 62, 70]}
 
 df = pd.DataFrame(raw_data)
-print(Entropia(df, index=0, valor='Dragoons'))
+print(Entropia(df, index=0, valor='Nighthawks'))
