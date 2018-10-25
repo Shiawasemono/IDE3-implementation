@@ -1,6 +1,12 @@
 import pandas as pd
 import operator
 
+def entropia(matriz_datos):
+        return 1
+
+def ganancia(input):
+    return 1
+
 def DecisionTreeID(nombre_fichero):
     matriz_datos = pd.read_csv(nombre_fichero)
     matriz_datos_original = pd.read_csv(nombre_fichero) # Realmente necesario? Demanding?
@@ -30,9 +36,3 @@ def DecisionTreeID(nombre_fichero):
         arbol_terminado = True
 
     return matriz_datos
-
-    def entropia(matriz_datos):
-        return 1
-
-    def ganancia(input):
-        return 1
