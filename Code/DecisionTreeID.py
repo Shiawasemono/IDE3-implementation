@@ -8,17 +8,30 @@ def Entropia(matriz_datos,index=-1,valor=0):
 	# para trabajar con el número de apariciones de cada clase.
 	valDif = list(zip(valDif.index, valDif.values))
 	l = len(matriz_datos)
+	E = 0
 	if index == -1:
 		#Estamos calculando la entropía de la variable de decisión
-		E = 0
 		for k in valDif:
 			p = k[1]/l 
 			E += p*np.log2(p)
 	else:
 		# Calculamos la entropía de una variable instanciada con un valor dado
-		E = 0
+		# Extracción del data frame filtrado por las dos columnas necesarias(index y variable de decisión)
 		cnt = matriz_datos.groupby([matriz_datos.columns[index],matriz_datos.columns[-1]]).size()
-		print(cnt)
+		# Zipeo de la información
+		dic = dict(zip(cnt.index,cnt.values))
+		# Array conla información que será filtrada por valor
+		a = []
+		for k in dic:
+			if(k[0] == valor):
+				a.append(dic[k])
+		
+		# Cálculo de la entropía
+		l = len(a)
+		for k in a:
+			p = k/l
+			E += p*np.log2(p)
+			
 	return -E
 
 raw_data = {'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks', 'Dragoons', 'Dragoons', 'Dragoons', 'Dragoons', 'Scouts', 'Scouts', 'Scouts', 'Scouts'], 
