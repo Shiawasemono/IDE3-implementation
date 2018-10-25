@@ -37,7 +37,11 @@ def entropia(matriz_datos,index=-1,valor=0):
 def ganancia(matriz_datos,col):
 	# Ganancia de un valor se define como: EntropiaGen + Sum (- valor/filastotales * entropia(matriz,indice,valor))
 	enGen = entropia(matriz_datos)
-	
+	filas = len(matriz_datos)
+	valDif = matriz_datos[col].value_counts()
+	valDif = list(zip(valDif.index,valDif.values))
+
+
 
 raw_data = {'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks', 'Dragoons', 'Dragoons', 'Dragoons', 'Dragoons', 'Scouts', 'Scouts', 'Scouts', 'Scouts'], 
         'company': ['1st', '1st', '2nd', '2nd', '1st', '1st', '2nd', '2nd','1st', '1st', '2nd', '2nd'], 
