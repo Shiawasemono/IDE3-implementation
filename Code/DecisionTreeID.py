@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-def Entropia(matriz_datos,index=-1,valor=0):
+def entropia(matriz_datos,index=-1,valor=0):
 	# Calculamos las clases existentes y las repeticiones en las mismas.
 	valDif = matriz_datos[matriz_datos.columns[-1]].value_counts()
 	# Convertimos la serie generada con la operación anterior en una lista de duplas
@@ -34,6 +34,11 @@ def Entropia(matriz_datos,index=-1,valor=0):
 			
 	return -E
 
+def ganancia(matriz_datos,col):
+	# Ganancia de un valor se define como: EntropiaGen + Sum (- valor/filastotales * entropia(matriz,indice,valor))
+	enGen = entropia(matriz_datos)
+	
+
 raw_data = {'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks', 'Dragoons', 'Dragoons', 'Dragoons', 'Dragoons', 'Scouts', 'Scouts', 'Scouts', 'Scouts'], 
         'company': ['1st', '1st', '2nd', '2nd', '1st', '1st', '2nd', '2nd','1st', '1st', '2nd', '2nd'], 
         'name': ['Miller', 'Jacobson', 'Ali', 'Milner', 'Cooze', 'Jacon', 'Ryaner', 'Sone', 'Sloan', 'Piger', 'Riani', 'Ali'], 
@@ -42,3 +47,5 @@ raw_data = {'regiment': ['Nighthawks', 'Nighthawks', 'Nighthawks', 'Nighthawks',
 
 df = pd.DataFrame(raw_data)
 print(Entropia(df, index=0, valor='Nighthawks'))
+
+
