@@ -40,6 +40,13 @@ def ganancia(matriz_datos,col):
 	filas = len(matriz_datos)
 	valDif = matriz_datos[col].value_counts()
 	valDif = list(zip(valDif.index,valDif.values))
+	Sum = 0
+	for k in valDif
+		p = k[1]/filas
+		Sum -= p*entropia(matriz_datos,col,k[0])
+	G = enGen + Sum
+	return G
+
 
 
 
