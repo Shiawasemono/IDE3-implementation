@@ -68,10 +68,13 @@ def decisionTree(matriz_datos, padre=None, rama=''):
 	# :param str padre nodo padre del nodo a generar (en este caso será la columna de la que salió el arco)
 	clasesDecision = matriz_datos[matriz_datos.columns[-1]].value_counts() # Cojo todos los valores que haya en la variable de decisión
 	clasesDecision = list(clasesDecision.index)
-	if len(matriz_datos.columns.tolist()) == 1 or len(clasesDecision) == 1: # Si solo está la variable de decisión O solo existe una clase en la variable de decisión
+	unicoValor = len(clasesDecision) == 1 or len(matriz_datos.columns.tolist()) == 1
+	if not unicoValor and len(matriz_datos.columns.tolist()) == 2: # si solo quedan dos columnas debo comprobar que en la que no es de decision quede un unico valor
+		clasesDecision = matriz_datos[matriz_datos.columns[0]].value_counts() # Cojo todos los valores que haya en la variable de decisión
+		clasesDecision = list(clasesDecision.index)
+		unicoValor = unicoValor or len(clasesDecision) == 1
+	if unicoValor: # Si solo está la variable de decisión O solo existe una clase en la variable de decisión
         # Caso base
-		#TODO: llega a un empty dataframe cuando no deberia
-		print(matriz_datos.mode())
 		name = matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0] + '\nid='
 		name += ''.join(np.random.choice(list(string.ascii_uppercase) + list(string.digits), size=4))
 		name = rama + '\n' + name
