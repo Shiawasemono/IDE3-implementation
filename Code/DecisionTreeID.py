@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-import anytree as at
+from anytree import Node, RenderTree, ContStyle
+from anytree.exporter import DotExporter
 import operator
 
 def entropia(matriz_datos,col='',valor=0):
@@ -53,31 +54,11 @@ def ganancia(matriz_datos,col):
 
 def DecisionTreeID(nombre_fichero):
     matriz_datos = pd.read_csv(nombre_fichero)
-    
-    # while not arbol_terminado:
-    #     dict_ganancias = {} # creo diccionario de ganancias vacío
-    #     atributos = matriz_datos.loc[matriz_datos.columns[:-1]]
-    #     for column in atributos: # por cada columna que me quede en la matriz de datos
-    #         entropias = []
-    #         # calculo entropia de cada caso
-    #         dict_ganancias[column] = ganancia(entropias) # calculo ganancia y la meto en el diccionario
-    #     ganancia_maxima = max(dict_ganancias.items(), key=operator.itemgetter(1))[0] # cojo ganancia maxima
-    #     # inserto nuevos nodos en arbol
-	# 	#TODO: Antes de eliminar la columna, hay que eliminar las filas que contienen el valor del proximo nodo
-    #     matriz_datos = matriz_datos.drop(columns = [ganancia_maxima]) # actualizo matriz_datos (elimino la columna escogida como atributo)
-	# 	#TODO: No hay que considerar que el arbol esta acabado cuando solo hay una columna, sino cuando hemos explorado todos los valores del primer nodo.
-	# 	# Backtracking HIGHLY recommended, o al menos la idea de la partición en miniárboles (que no deja de ser backtracking)
-    #     arbol_terminado = len(matriz_datos.columns) == 1 # actualizo arbol_terminado
 
-    #     # Borrar esto:
-    #     print('asd')
-    #     arbol_terminado = True
-
-    # return matriz_datos
     return decisionTree(matriz_datos)
 
 def reducir_matriz(matriz,columna,fila):
-    matriz_aux = matriz[matriz.columna != fila]
+    matriz_aux = matriz[matriz[columna] != fila]
     matriz_aux = matriz_aux.drop(columns = [columna])
 
     return matriz_aux
@@ -85,28 +66,36 @@ def reducir_matriz(matriz,columna,fila):
 def decisionTree(matriz_datos, padre=None, rama=''):
 	# :param pandas.DataFrame matriz_datos es la matriz a partir de la cual generar el nodo siguiente
 	# :param str padre nodo padre del nodo a generar (en este caso será la columna de la que salió el arco)
-    if matriz_datos.size == 3:
-        #TODO: Caso base
-        pass
-    variables = matriz_datos.loc[matriz_datos.columns[:-1]]
+	clasesDecision = matriz_datos[matriz_datos.columns[-1]].value_counts() # Cojo todos los valores que haya en la variable de decisión
+	clasesDecision = list(clasesDecision.index)
 
-    ganancia_max = ['',0]
-    for columna in variables:
-        ganancia_act = ganancia(matriz_datos, columna)
-        if ganancia_max[1] < ganancia_act:
-            ganancia_max = [columna, ganancia_act]
+	if len(matriz_datos.columns) == 1 or len(clasesDecision) == 1: # Si solo está la variable de decisión O solo existe una clase en la variable de decisión
+        # Caso base
+		return Node(name=matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0], parent=padre, rama=rama)
 
-    if rama == '':
-        nodo = at.Node(ganancia_max[0])
-    else:
-        nodo = at.Node(ganancia_max[0],padre,rama)
+	variables = matriz_datos.columns[:-1].tolist()
 
-    hijos = matriz_datos[ganancia_max[0]].value_counts()
-    hijos = list(hijos.index)
+	ganancia_max = ['',0]
+	for columna in variables:
+		ganancia_act = ganancia(matriz_datos, columna)
+		if ganancia_max[1] < ganancia_act:
+			ganancia_max = [columna, ganancia_act]
+
+	if rama == '':
+		nodo = Node(name=ganancia_max[0])
+	else:
+		nodo = Node(name=ganancia_max[0],parent=padre,rama=rama)
+
+	hijos = matriz_datos[ganancia_max[0]].value_counts()
+	hijos = list(hijos.index)
     
-    for hijo in hijos:
-        matriz_hijo = reducir_matriz(matriz_datos,ganancia_max[0],hijo)
-        decisionTree(matriz_hijo, ganancia_max[0], hijo)
+	for hijo in hijos:
+		matriz_hijo = reducir_matriz(matriz_datos,ganancia_max[0],hijo)
+		decisionTree(matriz_hijo, nodo, hijo)
 
-    return nodo
+	return nodo
     
+if __name__ == '__main__':
+	arbol = DecisionTreeID('data.csv')
+	print(RenderTree(arbol, style=ContStyle()))
+	DotExporter(arbol).to_picture('arbol.png')
