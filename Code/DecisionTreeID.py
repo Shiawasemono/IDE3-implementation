@@ -3,6 +3,7 @@ import numpy as np
 from anytree import Node, RenderTree, ContStyle
 from anytree.exporter import DotExporter
 import operator
+import string
 
 def entropia(matriz_datos,col='',valor=0):
 	# Calculamos las clases existentes y las repeticiones en las mismas.
@@ -25,18 +26,17 @@ def entropia(matriz_datos,col='',valor=0):
 		cnt = matriz_datos.groupby([col,matriz_datos.columns[-1]]).size()
 		# Zipeo de la información
 		dic = dict(zip(cnt.index,cnt.values))
-		# Array conla información que será filtrada por valor
+		# Array con la información que será filtrada por valor
 		a = []
 		for k in dic:
 			if(k[0] == valor):
 				a.append(dic[k])
-		
+
 		# Cálculo de la entropía
-		l = len(a)
+		l = sum(a)
 		for k in a:
 			p = k/l
 			E += p*np.log2(p)
-			
 	return -E
 
 def ganancia(matriz_datos,col):
@@ -48,14 +48,14 @@ def ganancia(matriz_datos,col):
 	Sum = 0
 	for k in valDif:
 		p = k[1]/filas
-		Sum -= p*entropia(matriz_datos,col,k[0])
+		E = p*entropia(matriz_datos,col,k[0])
+		Sum -= E
 	G = enGen + Sum
 	return G
 
 def DecisionTreeID(nombre_fichero):
-    matriz_datos = pd.read_csv(nombre_fichero)
-
-    return decisionTree(matriz_datos)
+	matriz_datos = pd.read_csv(nombre_fichero)
+	return decisionTree(matriz_datos)
 
 def reducir_matriz(matriz,columna,fila):
     matriz_aux = matriz[matriz[columna] != fila]
@@ -68,23 +68,31 @@ def decisionTree(matriz_datos, padre=None, rama=''):
 	# :param str padre nodo padre del nodo a generar (en este caso será la columna de la que salió el arco)
 	clasesDecision = matriz_datos[matriz_datos.columns[-1]].value_counts() # Cojo todos los valores que haya en la variable de decisión
 	clasesDecision = list(clasesDecision.index)
-
-	if len(matriz_datos.columns) == 1 or len(clasesDecision) == 1: # Si solo está la variable de decisión O solo existe una clase en la variable de decisión
+	if len(matriz_datos.columns.tolist()) == 1 or len(clasesDecision) == 1: # Si solo está la variable de decisión O solo existe una clase en la variable de decisión
         # Caso base
-		return Node(name=matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0], parent=padre, rama=rama)
-
+		#TODO: llega a un empty dataframe cuando no deberia
+		print(matriz_datos.mode())
+		name = matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0] + '\nid='
+		name += ''.join(np.random.choice(list(string.ascii_uppercase) + list(string.digits), size=4))
+		name = rama + '\n' + name
+		return Node(name=name, parent=padre, rama=rama)
+		#return Node(name=matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0], parent=padre, rama=rama)
+		
 	variables = matriz_datos.columns[:-1].tolist()
-
-	ganancia_max = ['',0]
+	ganancia_max = ['',-1] # La ganancia es siempre positiva, por lo que al comparar cualquiera sera mayor
 	for columna in variables:
 		ganancia_act = ganancia(matriz_datos, columna)
 		if ganancia_max[1] < ganancia_act:
 			ganancia_max = [columna, ganancia_act]
 
+	name = ganancia_max[0] + '\nid=' # Genero nombres con id's aleatorias para la separacion de los nodos en el grafo
+	name += ''.join(np.random.choice(list(string.ascii_uppercase) + list(string.digits), size=4))
+
 	if rama == '':
-		nodo = Node(name=ganancia_max[0])
+		nodo = Node(name=name)
 	else:
-		nodo = Node(name=ganancia_max[0],parent=padre,rama=rama)
+		name = rama + '\n' + name
+		nodo = Node(name=name,parent=padre,rama=rama)
 
 	hijos = matriz_datos[ganancia_max[0]].value_counts()
 	hijos = list(hijos.index)
@@ -97,5 +105,4 @@ def decisionTree(matriz_datos, padre=None, rama=''):
     
 if __name__ == '__main__':
 	arbol = DecisionTreeID('data.csv')
-	print(RenderTree(arbol, style=ContStyle()))
-	DotExporter(arbol).to_picture('arbol.png')
+	DotExporter(arbol).to_picture('arboldata.png')

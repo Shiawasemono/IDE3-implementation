@@ -1,0 +1,9 @@
+altura,color_pelo,color_ojos,decision
+bajo,rubio,marrones,-
+alto,moreno,marrones,-
+alto,rubio,azules,+
+alto,moreno,azules,-
+bajo,moreno,azules,-
+alto,rojo,azules,+
+alto,rubio,marrones,-
+bajo,rubio,azules,+
