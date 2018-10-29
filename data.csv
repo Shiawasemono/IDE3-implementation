@@ -1,4 +1,4 @@
-apresion_arterial,bazucar_en_sangre,cindice_colesterol,dalergia_a_antibioticos,eotras_alergias,fadministrar_farmaco
+presion_arterial,azucar_en_sangre,indice_colesterol,alergia_a_antibioticos,otras_alergias,administrar_farmaco
 Alta,Alto,Alto,No,No,Si
 Alta,Alto,Alto,Si,No,Si
 Baja,Alto,Bajo,No,No,Si

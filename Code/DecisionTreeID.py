@@ -5,67 +5,71 @@ from anytree.exporter import DotExporter
 import operator
 import string
 
-def entropia(matriz_datos,col='',valor=0):
+def entropia_inicial(columna):
+	return columna == ''
+
+def entropia(matriz_datos, columna='', valor=0):
 	# Calculamos las clases existentes y las repeticiones en las mismas.
-	if(col == ''):
-		col = matriz_datos.columns[-1]
-	valDif = matriz_datos[col].value_counts()
+	if(entropia_inicial(columna)):
+		columna = matriz_datos.columns[-1]
+	valores_diferentes = matriz_datos[columna].value_counts()
 	# Convertimos la serie generada con la operación anterior en una lista de duplas
 	# para trabajar con el número de apariciones de cada clase.
-	valDif = list(zip(valDif.index, valDif.values))
-	l = len(matriz_datos)
-	E = 0
-	if col == matriz_datos.columns[-1]:
+	valores_diferentes = list(zip(valores_diferentes.index, valores_diferentes.values))
+	len_matriz_datos = len(matriz_datos)
+	entropia = 0
+	if columna == matriz_datos.columns[-1]:
 		#Estamos calculando la entropía de la variable de decisión
-		for k in valDif:
-			p = k[1]/l 
-			E += p*np.log2(p)
+		for valor in valores_diferentes:
+			probabilidad_valor = valor[1]/len_matriz_datos 
+			entropia += probabilidad_valor*np.log2(probabilidad_valor)
 	else:
 		# Calculamos la entropía de una variable instanciada con un valor dado
 		# Extracción del data frame filtrado por las dos columnas necesarias(index y variable de decisión)
-		cnt = matriz_datos.groupby([col,matriz_datos.columns[-1]]).size()
+		matriz_datos_filtrada = matriz_datos.groupby([columna,matriz_datos.columns[-1]]).size()
 		# Zipeo de la información
-		dic = dict(zip(cnt.index,cnt.values))
+		matriz_datos_filtrada = dict(zip(matriz_datos_filtrada.index,matriz_datos_filtrada.values))
 		# Array con la información que será filtrada por valor
-		a = []
-		for k in dic:
-			if(k[0] == valor):
-				a.append(dic[k])
+		info_filtrada = []
+		for valor in matriz_datos_filtrada:
+			if(valor[0] == valor):
+				info_filtrada.append(matriz_datos_filtrada[valor])
 
 		# Cálculo de la entropía
-		l = sum(a)
-		for k in a:
-			p = k/l
-			E += p*np.log2(p)
-	return -E
+		len_matriz_datos = sum(info_filtrada)
+		for valor in info_filtrada:
+			probabilidad_valor = valor/len_matriz_datos
+			entropia += probabilidad_valor*np.log2(probabilidad_valor)
+	return -entropia
 
-def ganancia(matriz_datos,col):
+def ganancia(matriz_datos,columna):
 	# Ganancia de un valor se define como: EntropiaGen + Sum (- valor/filastotales * entropia(matriz,indice,valor))
-	enGen = entropia(matriz_datos)
-	filas = len(matriz_datos)
-	valDif = matriz_datos[col].value_counts()
-	valDif = list(zip(valDif.index,valDif.values))
-	Sum = 0
-	for k in valDif:
-		p = k[1]/filas
-		E = p*entropia(matriz_datos,col,k[0])
-		Sum -= E
-	G = enGen + Sum
-	return G
+	entropia_general = entropia(matriz_datos)
+	len_matriz_datos = len(matriz_datos)
+	valores_diferentes = matriz_datos[columna].value_counts()
+	valores_diferentes = list(zip(valores_diferentes.index, valores_diferentes.values))
+	sumatorio = 0
+	for valor in valores_diferentes:
+		probabilidad_valor = valor[1] / len_matriz_datos
+		entropia_particular = probabilidad_valor * entropia(matriz_datos,columna,valor[0])
+		sumatorio -= entropia_particular
+	ganancia = entropia_general + sumatorio
+	return ganancia
 
 def DecisionTreeID(nombre_fichero):
 	matriz_datos = pd.read_csv(nombre_fichero)
 	return decisionTree(matriz_datos)
 
-def reducir_matriz(matriz,columna,fila):
+def reducir_matriz(matriz, columna, fila):
     matriz_aux = matriz[matriz[columna] != fila]
     matriz_aux = matriz_aux.drop(columns = [columna])
-
     return matriz_aux
 
 def decisionTree(matriz_datos, padre=None, rama=''):
-	# :param pandas.DataFrame matriz_datos es la matriz a partir de la cual generar el nodo siguiente
-	# :param str padre nodo padre del nodo a generar (en este caso será la columna de la que salió el arco)
+	"""
+		:param pandas.DataFrame matriz_datos es la matriz a partir de la cual generar el nodo siguiente
+		:param str padre nodo padre del nodo a generar (en este caso será la columna de la que salió el arco)
+	"""
 	clasesDecision = matriz_datos[matriz_datos.columns[-1]].value_counts() # Cojo todos los valores que haya en la variable de decisión
 	clasesDecision = list(clasesDecision.index)
 	unicoValor = len(clasesDecision) == 1 or len(matriz_datos.columns.tolist()) == 1
