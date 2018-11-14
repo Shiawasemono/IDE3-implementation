@@ -82,11 +82,11 @@ def decisionTree(matriz_datos, padre=None, rama=''):
 		unicoValor = unicoValor or len(clasesDecision) == 1
 	if unicoValor: # Si solo está la variable de decisión O solo existe una clase en la variable de decisión
         # Caso base
-		name = matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0] + '\nid='
+		referencia = matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0]
+		name = referencia + '\nid='
 		name += ''.join(np.random.choice(list(string.ascii_uppercase) + list(string.digits), size=4))
 		name = rama + '\n' + name
-		return Node(name=name, parent=padre, rama=rama)
-		#return Node(name=matriz_datos.mode()[matriz_datos.columns[-1]].iloc[0], parent=padre, rama=rama)
+		return Node(name=name, parent=padre, rama=rama, ref=referencia)
 		
 	variables = matriz_datos.columns[:-1].tolist()
 	ganancia_max = ['',-1] # La ganancia es siempre positiva, por lo que al comparar cualquiera sera mayor
@@ -94,14 +94,15 @@ def decisionTree(matriz_datos, padre=None, rama=''):
 		ganancia_act = ganancia(matriz_datos, columna)
 		if ganancia_max[1] < ganancia_act:
 			ganancia_max = [columna, ganancia_act]
-	name = ganancia_max[0] + '\nid=' # Genero nombres con id's aleatorias para la separacion de los nodos en el grafo
+	referencia = ganancia_max[0]
+	name = referencia + '\nid=' # Genero nombres con id's aleatorias para la separacion de los nodos en el grafo
 	name += ''.join(np.random.choice(list(string.ascii_uppercase) + list(string.digits), size=4))
 
 	if rama == '':
 		nodo = Node(name=name)
 	else:
 		name = rama + '\n' + name
-		nodo = Node(name=name,parent=padre,rama=rama)
+		nodo = Node(name=name,parent=padre,rama=rama, ref=referencia)
 
 	hijos = matriz_datos[ganancia_max[0]].value_counts()
 	hijos = list(hijos.index)
@@ -111,7 +112,16 @@ def decisionTree(matriz_datos, padre=None, rama=''):
 		decisionTree(matriz_hijo, nodo, hijo)
 
 	return nodo
+
+def predict(nombre_fichero, arbol):
+	datos = pd.read_csv(nombre_fichero)
+	encontrado = False
+	nodoActual = arbol
+	while not encontrado:
+	 	if(not nodoActual.children):
+			 encontrado = True
+	print(type(arbol.children))
     
 if __name__ == '__main__':
 	arbol = DecisionTreeID('data.csv')
-	DotExporter(arbol).to_picture('arbol.png')
+	predict('data (copia).csv', arbol)
