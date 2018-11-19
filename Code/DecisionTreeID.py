@@ -99,7 +99,7 @@ def decisionTree(matriz_datos, padre=None, rama=''):
 	name += ''.join(np.random.choice(list(string.ascii_uppercase) + list(string.digits), size=4))
 
 	if rama == '':
-		nodo = Node(name=name)
+		nodo = Node(name=name, ref=referencia)
 	else:
 		name = rama + '\n' + name
 		nodo = Node(name=name,parent=padre,rama=rama, ref=referencia)
@@ -117,11 +117,19 @@ def predict(nombre_fichero, arbol):
 	datos = pd.read_csv(nombre_fichero)
 	encontrado = False
 	nodoActual = arbol
+
 	while not encontrado:
-	 	if(not nodoActual.children):
-			 encontrado = True
-	print(type(arbol.children))
+		if not nodoActual.children:
+			encontrado = True
+		else:
+			nodo = nodoActual.ref
+			
+			for child in nodoActual.children:
+				if child.rama in datos[nodo].iloc[0]:
+					nodoActual = child
+
+	return nodoActual.ref
     
 if __name__ == '__main__':
 	arbol = DecisionTreeID('data.csv')
-	predict('data (copia).csv', arbol)
+	print(predict('data (copia).csv', arbol))
