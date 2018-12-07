@@ -58,13 +58,7 @@ def DecisionTreeID(nombre_fichero):
 	return decisionTree(matriz_datos)
 
 def reducir_matriz(matriz,columna,fila):
-	# # Comprobamos que solo queda una clase en la variable de decisión, si no, capamos la matriz
-	# matriz_comprobar = matriz[matriz[columna] == fila]
-	# clases_iguales = matriz_comprobar[matriz_comprobar.columns[-1]].value_counts()
-	# lista_clases_iguales = list(clases_iguales.index)
-	# if len(lista_clases_iguales) == 1:
-	# 	return matriz_comprobar[matriz_comprobar.columns[-1]].to_frame()
-
+	
 	matriz_aux = matriz[matriz[columna] == fila]
 	matriz_aux = matriz_aux.drop(columns = [columna])
 
